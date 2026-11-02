@@ -1,0 +1,9 @@
+services:
+  stackpulse:
+    build: .
+    container_name: stackpulse-console
+    ports:
+      - "8098:8098"
+    environment:
+      - STACKPULSE_PORT=8098
+    restart: unless-stopped
