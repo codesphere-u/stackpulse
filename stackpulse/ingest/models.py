@@ -42,6 +42,10 @@ class SpanRecord(BaseModel):
         return self.start_time_ms + self.duration_ms
 
     @property
+    def peer_service(self) -> str | None:
+        return self.PeerService
+
+    @property
     def is_error(self) -> bool:
         return self.status_code == "ERROR" or (self.http_status is not None and self.http_status >= 500)
 

@@ -9,6 +9,7 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
 from stackpulse import __version__
+from stackpulse.aegis_bridge import create_aegis_trajectory_leaf
 from stackpulse.incidents.correlator import IncidentCorrelator
 from stackpulse.ingest.models import (
     LogRecord,
@@ -16,6 +17,8 @@ from stackpulse.ingest.models import (
     SpanRecord,
     TelemetryStore,
 )
+from stackpulse.notifications import AlertDispatcher
+from stackpulse.otlp import parse_otlp_resource_spans
 from stackpulse.simulator.chaos import ChaosSimulator, ScenarioType
 from stackpulse.slo.engine import SLOEngine
 from stackpulse.topology.graph import TopologyGraphBuilder
@@ -531,6 +534,7 @@ def create_app(seed_initial_workload: bool = True) -> FastAPI:
     slo_engine = SLOEngine()
     correlator = IncidentCorrelator()
     simulator = ChaosSimulator(seed=42)
+    alert_dispatcher = AlertDispatcher()
 
     if seed_initial_workload:
         simulator.inject_scenario(store, scenario="all", count=24)
@@ -541,6 +545,7 @@ def create_app(seed_initial_workload: bool = True) -> FastAPI:
     app.state.slo_engine = slo_engine
     app.state.correlator = correlator
     app.state.simulator = simulator
+    app.state.alert_dispatcher = alert_dispatcher
 
     @app.get("/", response_class=HTMLResponse)
     def observability_console() -> HTMLResponse:
@@ -645,6 +650,63 @@ def create_app(seed_initial_workload: bool = True) -> FastAPI:
             "stats": stats,
             "active_traces": len(store.traces),
         }
+
+    @app.post("/v1/traces")
+    @app.post("/api/v1/otlp/traces")
+    def ingest_otlp_traces(request_data: dict[str, Any]) -> dict[str, Any]:
+        """Ingest standard OpenTelemetry OTLP/HTTP JSON spans."""
+        spans = parse_otlp_resource_spans(request_data)
+        count = store.ingest_spans(spans)
+        return {
+            "partialSuccess": {},
+            "ingested_spans": count,
+            "active_traces": len(store.traces),
+        }
+
+    @app.post("/api/v1/alerts/register-webhook")
+    def register_alert_webhook(payload: dict[str, str]) -> dict[str, Any]:
+        url = payload.get("url")
+        if not url:
+            raise HTTPException(status_code=400, detail="Missing 'url'")
+        alert_dispatcher.register_webhook(url)
+        return {"registered": True, "webhooks": alert_dispatcher.webhook_urls}
+
+    @app.get("/api/v1/alerts/history")
+    def get_alert_history() -> dict[str, Any]:
+        return {
+            "count": len(alert_dispatcher.dispatched_history),
+            "alerts": [a.to_dict() for a in alert_dispatcher.dispatched_history],
+        }
+
+    @app.post("/api/v1/alerts/evaluate")
+    def evaluate_and_dispatch_alerts() -> dict[str, Any]:
+        all_spans = store.get_all_spans()
+        slo_reports = slo_engine.evaluate_all(all_spans)
+        trace_analyses = [
+            analyzer.analyze_trace(store.get_trace_spans(tid))
+            for tid in store.trace_order
+            if store.get_trace_spans(tid)
+        ]
+        incident = correlator.correlate(
+            trace_analyses=trace_analyses,
+            slo_reports=slo_reports,
+            logs=store.logs,
+        )
+        slo_alerts = alert_dispatcher.evaluate_slo_reports(slo_reports)
+        incident_alerts = alert_dispatcher.evaluate_incident(incident)
+        all_dispatched = slo_alerts + incident_alerts
+        return {
+            "dispatched_count": len(all_dispatched),
+            "alerts": [a.to_dict() for a in all_dispatched],
+        }
+
+    @app.get("/api/v1/aegis/leaf/{trace_id}")
+    def get_aegis_leaf(trace_id: str) -> dict[str, Any]:
+        spans = store.get_trace_spans(trace_id)
+        if not spans:
+            raise HTTPException(status_code=404, detail=f"Trace '{trace_id}' not found")
+        ta = analyzer.analyze_trace(spans)
+        return create_aegis_trajectory_leaf(ta)
 
     return app
 

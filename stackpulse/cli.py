@@ -10,8 +10,10 @@ from collections.abc import Sequence
 
 import uvicorn
 
+from stackpulse.aegis_bridge import create_aegis_trajectory_leaf
 from stackpulse.incidents.correlator import IncidentCorrelator
 from stackpulse.ingest.models import TelemetryStore
+from stackpulse.otlp import parse_otlp_resource_spans
 from stackpulse.simulator.chaos import ChaosSimulator, ScenarioType
 from stackpulse.slo.engine import SLOEngine
 from stackpulse.topology.graph import TopologyGraphBuilder
@@ -130,6 +132,49 @@ def cmd_benchmark(trace_count: int = 500) -> int:
     return 0
 
 
+def cmd_export_aegis(trace_id: str | None = None, as_json: bool = True) -> int:
+    """Generate and emit a Nexus Aegis Gate 4 (G4_TRAJECTORY_HEALTH) cryptographic leaf."""
+    store = TelemetryStore()
+    sim = ChaosSimulator(seed=42)
+    analyzer = TraceAnalyzer()
+
+    if trace_id:
+        spans = store.get_trace_spans(trace_id)
+        if not spans:
+            print(f"Error: Trace '{trace_id}' not found in store.", file=sys.stderr)
+            return 1
+    else:
+        # Generate representative normal trace
+        spans, _ = sim.generate_normal_trace()
+
+    analysis = analyzer.analyze_trace(spans)
+    leaf = create_aegis_trajectory_leaf(analysis)
+
+    if as_json:
+        print(json.dumps(leaf, indent=2))
+    else:
+        print(f"Aegis Gate: {leaf['gate']}")
+        print(f"Trace ID:   {leaf['trace_id']}")
+        print(f"Passed:     {leaf['passed']}")
+        print(f"Leaf Hash:  {leaf['leaf_hash']}")
+    return 0
+
+
+def cmd_ingest_otlp(file_path: str | None = None) -> int:
+    """Ingest OTLP JSON spans from file or stdin and validate them."""
+    if file_path and file_path != "-":
+        with open(file_path, "r", encoding="utf-8") as f:
+            raw_data = json.load(f)
+    else:
+        raw_data = json.load(sys.stdin)
+
+    spans = parse_otlp_resource_spans(raw_data)
+    store = TelemetryStore()
+    count = store.ingest_spans(spans)
+    print(f"Successfully ingested {count} OTLP spans across {len(store.traces)} trace(s).")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="stackpulse",
@@ -154,6 +199,13 @@ def build_parser() -> argparse.ArgumentParser:
     serve_p.add_argument("--host", default="127.0.0.1", help="Bind host address")
     serve_p.add_argument("--port", type=int, default=8098, help="Bind TCP port")
 
+    aegis_p = sub.add_parser("export-aegis", help="Emit Nexus Aegis G4 Merkle leaf attestation")
+    aegis_p.add_argument("--trace-id", default=None, help="Trace ID to evaluate")
+    aegis_p.add_argument("--text", action="store_true", help="Print summary text instead of JSON")
+
+    otlp_p = sub.add_parser("ingest-otlp", help="Ingest OTLP/HTTP JSON trace file")
+    otlp_p.add_argument("--file", "-f", default="-", help="Path to OTLP JSON file or '-' for stdin")
+
     return parser
 
 
@@ -168,6 +220,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.command == "serve":
         uvicorn.run("stackpulse.server.app:app", host=args.host, port=args.port, reload=False)
         return 0
+    if args.command == "export-aegis":
+        return cmd_export_aegis(trace_id=args.trace_id, as_json=not args.text)
+    if args.command == "ingest-otlp":
+        return cmd_ingest_otlp(file_path=args.file)
     return 1
 
 

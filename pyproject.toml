@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "stackpulse"
-version = "1.0.0"
+version = "1.1.0"
 description = "Cloud Observability, Distributed Tracing & Multi-Window SLO Reliability Platform"
 readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.10"
 authors = [
-    { name = "StackPulse Contributors" }
+    { name = "Akandwanaho Ivan Alvin", email = "codesphereinnovationz@gmail.com" }
 ]
 keywords = [
     "observability",
