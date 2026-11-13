@@ -971,9 +971,15 @@ def create_app(
     @app.get("/metrics")
     def get_metrics(request: Request, format: str = Query(default="")) -> Response:
         snapshot = metrics.snapshot()
+        spans_count = sum(len(spans) for spans in store.traces.values())
+        alerts_count = len(alert_dispatcher.dispatched_history)
+        webhooks_count = len(alert_dispatcher.webhook_urls)
         accept = request.headers.get("accept", "").lower()
         fmt = format.lower()
-        if fmt == "json" or (fmt != "prometheus" and "application/json" in accept and "text/plain" not in accept):
+        wants_json = fmt == "json" or (
+            fmt != "prometheus" and "application/json" in accept and "text/plain" not in accept
+        )
+        if wants_json:
             return JSONResponse(
                 content={
                     "service": _SERVICE_NAME,
@@ -990,8 +996,11 @@ def create_app(
                     },
                     "gauges": {
                         "traces_count": len(store.traces),
+                        "spans_count": spans_count,
                         "logs_count": len(store.logs),
                         "metrics_count": len(store.metrics),
+                        "alerts_dispatched_count": alerts_count,
+                        "webhooks_registered_count": webhooks_count,
                     },
                 }
             )
@@ -1000,8 +1009,19 @@ def create_app(
             snapshot,
             gauges=[
                 ("stackpulse_traces_count", "Active distributed traces stored", len(store.traces)),
+                ("stackpulse_spans_count", "Active W3C spans stored", spans_count),
                 ("stackpulse_logs_count", "Stored log records", len(store.logs)),
                 ("stackpulse_metrics_count", "Stored metric points", len(store.metrics)),
+                (
+                    "stackpulse_alerts_dispatched_count",
+                    "Total SRE/SLO alerts dispatched",
+                    alerts_count,
+                ),
+                (
+                    "stackpulse_webhooks_registered_count",
+                    "Registered alert notification webhooks",
+                    webhooks_count,
+                ),
             ],
         )
         return Response(

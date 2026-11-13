@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ipaddress
+import os
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -34,9 +35,17 @@ def validate_webhook_url(url: str) -> str:
     hostname = (parsed.hostname or "").strip().lower().rstrip(".")
     if not hostname:
         raise ValueError("Webhook URL must contain a valid hostname.")
+    allow_private = os.getenv("STACKPULSE_ALLOW_PRIVATE_WEBHOOKS", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    if allow_private:
+        return cleaned
     if (
         hostname in _BLOCKED_WEBHOOK_HOSTS
-        or hostname.endswith((".localhost", ".local", ".internal"))
+        or hostname.endswith((".localhost", ".local", ".localdomain", ".internal"))
         or hostname.isdigit()
     ):
         raise ValueError(f"Webhook host {hostname!r} is restricted (SSRF policy).")
