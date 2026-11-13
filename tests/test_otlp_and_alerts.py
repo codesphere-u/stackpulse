@@ -4,30 +4,27 @@ from __future__ import annotations
 
 import base64
 import json
-import pytest
+
 from fastapi.testclient import TestClient
 
 from stackpulse.aegis_bridge import (
     canonical_json_bytes,
     create_aegis_trajectory_leaf,
-    create_aegis_trajectory_payload,
     rfc6962_leaf_hash,
 )
 from stackpulse.cli import main
-from stackpulse.ingest.models import SpanRecord, TelemetryStore
+from stackpulse.ingest.models import SpanRecord
 from stackpulse.notifications import AlertDispatcher, AlertEvent
 from stackpulse.otlp import (
     map_otlp_span_kind,
     map_otlp_status_code,
     normalize_id,
-    parse_otlp_attributes,
     parse_otlp_resource_spans,
     parse_otlp_value,
 )
 from stackpulse.server.app import create_app
 from stackpulse.slo.engine import SLOReport
 from stackpulse.tracing.analyzer import TraceAnalyzer
-
 
 SAMPLE_OTLP_PAYLOAD = {
     "resourceSpans": [
@@ -154,7 +151,7 @@ def test_fastapi_v1_traces_otlp_ingestion() -> None:
     assert "partialSuccess" in data
 
     # Verify trace is queryable in detail
-    detail = client.get(f"/api/v1/traces/4bf92f3577b34da6a3ce929d0e0e4736")
+    detail = client.get("/api/v1/traces/4bf92f3577b34da6a3ce929d0e0e4736")
     assert detail.status_code == 200
     analysis = detail.json()["analysis"]
     assert analysis["span_count"] == 2
@@ -252,7 +249,7 @@ def test_aegis_g4_leaf_generation_and_api() -> None:
     client = TestClient(app)
     client.post("/v1/traces", json=SAMPLE_OTLP_PAYLOAD)
 
-    resp = client.get(f"/api/v1/aegis/leaf/4bf92f3577b34da6a3ce929d0e0e4736")
+    resp = client.get("/api/v1/aegis/leaf/4bf92f3577b34da6a3ce929d0e0e4736")
     assert resp.status_code == 200
     api_leaf = resp.json()
     assert api_leaf["leaf_hash"] == leaf["leaf_hash"]

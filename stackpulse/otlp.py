@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import base64
 import binascii
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from stackpulse.ingest.models import SpanEvent, SpanRecord
 
@@ -58,7 +58,7 @@ def parse_otlp_value(val: Any) -> Any:
     return {k: parse_otlp_value(v) for k, v in val.items()}
 
 
-def parse_otlp_attributes(attrs: Union[List[Dict[str, Any]], Dict[str, Any], None]) -> Dict[str, Any]:
+def parse_otlp_attributes(attrs: list[dict[str, Any]] | dict[str, Any] | None) -> dict[str, Any]:
     """Normalize OTLP attributes into a flat dictionary."""
     if not attrs:
         return {}
@@ -66,7 +66,7 @@ def parse_otlp_attributes(attrs: Union[List[Dict[str, Any]], Dict[str, Any], Non
     if isinstance(attrs, dict):
         return {k: parse_otlp_value(v) for k, v in attrs.items()}
 
-    result: Dict[str, Any] = {}
+    result: dict[str, Any] = {}
     if isinstance(attrs, list):
         for item in attrs:
             if isinstance(item, dict) and "key" in item:
@@ -130,7 +130,7 @@ def map_otlp_span_kind(kind: Any) -> str:
     return "INTERNAL"
 
 
-def map_otlp_status_code(status_dict: Optional[Dict[str, Any]]) -> str:
+def map_otlp_status_code(status_dict: dict[str, Any] | None) -> str:
     """Extract W3C status code from OTLP status object."""
     if not status_dict:
         return "OK"
@@ -146,13 +146,13 @@ def map_otlp_status_code(status_dict: Optional[Dict[str, Any]]) -> str:
     return "OK"
 
 
-def parse_otlp_resource_spans(payload: Dict[str, Any]) -> List[SpanRecord]:
+def parse_otlp_resource_spans(payload: dict[str, Any]) -> list[SpanRecord]:
     """Parse standard OpenTelemetry OTLP/HTTP JSON payload into SpanRecords."""
     resource_spans = payload.get("resourceSpans") or payload.get("resource_spans") or []
     if not isinstance(resource_spans, list):
         return []
 
-    spans_out: List[SpanRecord] = []
+    spans_out: list[SpanRecord] = []
 
     for rs in resource_spans:
         resource = rs.get("resource") or {}
@@ -194,7 +194,7 @@ def parse_otlp_resource_spans(payload: Dict[str, Any]) -> List[SpanRecord]:
                 else:
                     start_time_ms = float(s.get("start_time_ms", 0.0))
 
-                if end_ns_val >= start_ns_val and start_ns_val > 0:
+                if end_ns_val >= start_ns_val > 0:
                     duration_ms = (end_ns_val - start_ns_val) / 1_000_000.0
                 else:
                     duration_ms = float(s.get("duration_ms", 0.0))
@@ -225,7 +225,7 @@ def parse_otlp_resource_spans(payload: Dict[str, Any]) -> List[SpanRecord]:
                         break
 
                 # Events
-                events_out: List[SpanEvent] = []
+                events_out: list[SpanEvent] = []
                 raw_events = s.get("events") or []
                 for ev in raw_events:
                     ev_name = ev.get("name", "event")

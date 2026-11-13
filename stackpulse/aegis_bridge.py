@@ -4,23 +4,23 @@ from __future__ import annotations
 
 import hashlib
 import json
-from typing import Any, Dict
+from typing import Any
 
 from stackpulse.tracing.analyzer import TraceAnalysis
 
 
-def canonical_json_bytes(data: Dict[str, Any]) -> bytes:
+def canonical_json_bytes(data: dict[str, Any]) -> bytes:
     """Serialize dictionary into deterministic RFC 8785 canonical JSON bytes."""
     return json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
 
 
-def rfc6962_leaf_hash(payload: Dict[str, Any]) -> str:
+def rfc6962_leaf_hash(payload: dict[str, Any]) -> str:
     """Compute RFC 6962 Merkle tree leaf hash: SHA-256(0x00 || canonical_json)."""
     leaf_bytes = b"\x00" + canonical_json_bytes(payload)
     return hashlib.sha256(leaf_bytes).hexdigest()
 
 
-def create_aegis_trajectory_payload(analysis: TraceAnalysis) -> Dict[str, Any]:
+def create_aegis_trajectory_payload(analysis: TraceAnalysis) -> dict[str, Any]:
     """Construct canonical payload for Aegis Gate 4 verification."""
     passed = not analysis.has_error and len(analysis.n_plus_one_findings) == 0 and len(analysis.retry_findings) == 0
 
@@ -42,7 +42,7 @@ def create_aegis_trajectory_payload(analysis: TraceAnalysis) -> Dict[str, Any]:
     }
 
 
-def create_aegis_trajectory_leaf(analysis: TraceAnalysis) -> Dict[str, Any]:
+def create_aegis_trajectory_leaf(analysis: TraceAnalysis) -> dict[str, Any]:
     """Generate complete Aegis G4 attestation leaf with RFC 6962 cryptographic digest."""
     payload = create_aegis_trajectory_payload(analysis)
     leaf_hash = rfc6962_leaf_hash(payload)

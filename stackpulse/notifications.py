@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import json
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Literal, Optional
+from typing import Any, Literal
 
 from stackpulse.incidents.correlator import IncidentReport
 from stackpulse.slo.engine import SLOReport
@@ -23,10 +23,10 @@ class AlertEvent:
     service: str
     summary: str
     timestamp_ms: float = field(default_factory=lambda: time.time() * 1000.0)
-    details: Dict[str, Any] = field(default_factory=dict)
-    remediation_steps: List[str] = field(default_factory=list)
+    details: dict[str, Any] = field(default_factory=dict)
+    remediation_steps: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "alert_id": self.alert_id,
             "alert_name": self.alert_name,
@@ -38,7 +38,7 @@ class AlertEvent:
             "remediation_steps": self.remediation_steps,
         }
 
-    def to_slack_payload(self) -> Dict[str, Any]:
+    def to_slack_payload(self) -> dict[str, Any]:
         """Format as Slack-compatible webhook message block."""
         emoji = "🚨" if self.severity == "PAGE_CRITICAL" else ("⚠️" if self.severity == "TICKET_WARNING" else "ℹ️")
         return {
@@ -71,17 +71,17 @@ class AlertDispatcher:
 
     def __init__(self, cooldown_seconds: float = 300.0) -> None:
         self.cooldown_seconds = cooldown_seconds
-        self.webhook_urls: List[str] = []
-        self._last_fired: Dict[str, float] = {}
-        self.dispatched_history: List[AlertEvent] = []
-        self._http_sender: Optional[Callable[[str, Dict[str, Any]], bool]] = None
+        self.webhook_urls: list[str] = []
+        self._last_fired: dict[str, float] = {}
+        self.dispatched_history: list[AlertEvent] = []
+        self._http_sender: Callable[[str, dict[str, Any]], bool] | None = None
 
     def register_webhook(self, url: str) -> None:
         """Register a destination HTTP(S) webhook URL."""
         if url not in self.webhook_urls:
             self.webhook_urls.append(url)
 
-    def set_custom_sender(self, sender: Callable[[str, Dict[str, Any]], bool]) -> None:
+    def set_custom_sender(self, sender: Callable[[str, dict[str, Any]], bool]) -> None:
         """Override the network transport for unit tests or custom integrations."""
         self._http_sender = sender
 
@@ -94,9 +94,9 @@ class AlertDispatcher:
             return True
         return False
 
-    def evaluate_slo_reports(self, reports: List[SLOReport]) -> List[AlertEvent]:
+    def evaluate_slo_reports(self, reports: list[SLOReport]) -> list[AlertEvent]:
         """Convert firing SLO reports into alert events."""
-        events: List[AlertEvent] = []
+        events: list[AlertEvent] = []
         for r in reports:
             if r.alert_severity == "OK":
                 continue
@@ -130,7 +130,7 @@ class AlertDispatcher:
 
         return events
 
-    def evaluate_incident(self, incident: IncidentReport) -> List[AlertEvent]:
+    def evaluate_incident(self, incident: IncidentReport) -> list[AlertEvent]:
         """Convert detected incidents into alerts."""
         if not incident or incident.severity == "NONE":
             return []
