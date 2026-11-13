@@ -6,7 +6,38 @@ on:
   pull_request:
     branches: ["main"]
 
+permissions:
+  contents: read
+
 jobs:
+  dependency-audit:
+    name: Runtime Dependency Audit (pip-audit)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Audit runtime dependencies with pip-audit
+        run: |
+          uv export --no-emit-project --no-hashes --no-dev --format requirements-txt > runtime-requirements.txt
+          uvx pip-audit -r runtime-requirements.txt --progress-spinner off
+
+  docker-build:
+    name: Docker Image Build & Non-Root Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t stackpulse:ci .
+
+      - name: Verify non-root container & package import
+        run: docker run --rm stackpulse:ci python -c "import os, stackpulse; assert os.geteuid() != 0"
+
   test-and-lint:
     name: Lint, Typecheck & Test (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
