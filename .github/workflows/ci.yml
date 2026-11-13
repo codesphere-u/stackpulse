@@ -8,25 +8,35 @@ on:
 
 jobs:
   test-and-lint:
+    name: Lint, Typecheck & Test (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install uv
         uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
 
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
 
-      - name: Lint with Ruff
-        run: uv run --python ${{ matrix.python-version }} --with ruff ruff check .
+      - name: Install dependencies
+        run: uv sync --extra dev --python ${{ matrix.python-version }}
 
-      - name: Run Pytest Suite
-        run: uv run --python ${{ matrix.python-version }} --with pytest --with fastapi --with httpx --with pydantic --with uvicorn pytest -v
+      - name: Lint with Ruff
+        run: uv run --python ${{ matrix.python-version }} ruff check .
+
+      - name: Typecheck with Mypy
+        run: uv run --python ${{ matrix.python-version }} mypy stackpulse
+
+      - name: Run Pytest Suite with Coverage
+        run: uv run --python ${{ matrix.python-version }} pytest -v --cov=stackpulse --cov-report=term-missing --cov-fail-under=85
 
       - name: Run CLI Simulation & Benchmark Smoke Check
         run: |

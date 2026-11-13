@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import base64
 import binascii
-from typing import Any
+from typing import Any, Literal
 
 from stackpulse.ingest.models import SpanEvent, SpanRecord
+
+SpanKind = Literal["SERVER", "CLIENT", "INTERNAL", "PRODUCER", "CONSUMER"]
+SpanStatusCode = Literal["OK", "ERROR", "UNSET"]
 
 
 def parse_otlp_value(val: Any) -> Any:
@@ -111,10 +114,10 @@ def normalize_id(id_val: Any, default_hex_len: int = 32) -> str:
     return cleaned[:default_hex_len]
 
 
-def map_otlp_span_kind(kind: Any) -> str:
+def map_otlp_span_kind(kind: Any) -> SpanKind:
     """Map OTLP span kind (enum int or string) to StackPulse SpanRecord span_kind."""
     if isinstance(kind, int):
-        mapping = {
+        mapping: dict[int, SpanKind] = {
             1: "INTERNAL",
             2: "SERVER",
             3: "CLIENT",
@@ -125,12 +128,20 @@ def map_otlp_span_kind(kind: Any) -> str:
 
     if isinstance(kind, str):
         upper = kind.upper().replace("SPAN_KIND_", "")
-        if upper in {"SERVER", "CLIENT", "INTERNAL", "PRODUCER", "CONSUMER"}:
-            return upper
+        if upper == "SERVER":
+            return "SERVER"
+        if upper == "CLIENT":
+            return "CLIENT"
+        if upper == "INTERNAL":
+            return "INTERNAL"
+        if upper == "PRODUCER":
+            return "PRODUCER"
+        if upper == "CONSUMER":
+            return "CONSUMER"
     return "INTERNAL"
 
 
-def map_otlp_status_code(status_dict: dict[str, Any] | None) -> str:
+def map_otlp_status_code(status_dict: dict[str, Any] | None) -> SpanStatusCode:
     """Extract W3C status code from OTLP status object."""
     if not status_dict:
         return "OK"

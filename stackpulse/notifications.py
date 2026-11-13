@@ -2,13 +2,58 @@
 
 from __future__ import annotations
 
+import ipaddress
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, Literal
+from urllib.parse import urlsplit
 
 from stackpulse.incidents.correlator import IncidentReport
 from stackpulse.slo.engine import SLOReport
+
+_BLOCKED_WEBHOOK_HOSTS = frozenset(
+    {
+        "localhost",
+        "ip6-localhost",
+        "ip6-loopback",
+        "metadata",
+        "metadata.google.internal",
+    }
+)
+
+
+def validate_webhook_url(url: str) -> str:
+    """Validate an outbound webhook URL against common SSRF targets."""
+    cleaned = url.strip()
+    parsed = urlsplit(cleaned)
+    if parsed.scheme.lower() not in {"http", "https"}:
+        raise ValueError("Webhook URL must use http or https scheme.")
+    if parsed.username is not None or parsed.password is not None:
+        raise ValueError("Webhook URL must not contain embedded credentials.")
+    hostname = (parsed.hostname or "").strip().lower().rstrip(".")
+    if not hostname:
+        raise ValueError("Webhook URL must contain a valid hostname.")
+    if (
+        hostname in _BLOCKED_WEBHOOK_HOSTS
+        or hostname.endswith((".localhost", ".local", ".internal"))
+        or hostname.isdigit()
+    ):
+        raise ValueError(f"Webhook host {hostname!r} is restricted (SSRF policy).")
+    try:
+        ip_obj = ipaddress.ip_address(hostname)
+    except ValueError:
+        ip_obj = None
+    if ip_obj is not None and (
+        ip_obj.is_private
+        or ip_obj.is_loopback
+        or ip_obj.is_link_local
+        or ip_obj.is_multicast
+        or ip_obj.is_reserved
+        or ip_obj.is_unspecified
+    ):
+        raise ValueError(f"Webhook IP {hostname!r} is restricted (SSRF policy).")
+    return cleaned
 
 AlertSeverity = Literal["PAGE_CRITICAL", "TICKET_WARNING", "INFO"]
 
@@ -77,9 +122,10 @@ class AlertDispatcher:
         self._http_sender: Callable[[str, dict[str, Any]], bool] | None = None
 
     def register_webhook(self, url: str) -> None:
-        """Register a destination HTTP(S) webhook URL."""
-        if url not in self.webhook_urls:
-            self.webhook_urls.append(url)
+        """Register a destination HTTP(S) webhook URL after SSRF policy validation."""
+        validated = validate_webhook_url(url)
+        if validated not in self.webhook_urls:
+            self.webhook_urls.append(validated)
 
     def set_custom_sender(self, sender: Callable[[str, dict[str, Any]], bool]) -> None:
         """Override the network transport for unit tests or custom integrations."""

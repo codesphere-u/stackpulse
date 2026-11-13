@@ -145,7 +145,7 @@ class ChaosSimulator:
         s_pg = f"sp-{seq}-pg-slow"
 
         is_timeout = self.rng.random() < 0.45
-        status_code = "ERROR" if is_timeout else "OK"
+        status_code: Literal["OK", "ERROR", "UNSET"] = "ERROR" if is_timeout else "OK"
         http_code = 504 if is_timeout else 200
 
         spans = [
