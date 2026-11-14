@@ -136,11 +136,12 @@ th { font-weight: 700; color: var(--teal-dark); background: var(--surface); }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 @media (max-width: 860px) {
-  .docs-layout { grid-template-columns: 1fr; }
-  .docs-sidebar { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 14px 16px; gap: 12px; }
+  .docs-layout { grid-template-columns: 1fr; min-width: 0; overflow-x: hidden; }
+  .docs-sidebar { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 14px 16px; gap: 12px; min-width: 0; }
   .docs-nav { flex-direction: row; flex-wrap: wrap; }
   .docs-rail-foot { display: none; }
-  .docs-main { padding: 24px 18px 60px; }
+  .docs-main { padding: 24px 18px 60px; min-width: 0; overflow-x: hidden; }
+  .docs-main pre, .code-block { max-width: 100%; overflow-x: auto; }
 }
 
 @media (max-width: 640px) {
