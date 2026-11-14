@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StackPulse — OpenTelemetry DAG &amp; Multi-Window SLO Platform</title>
+  <meta name="description" content="OpenTelemetry W3C TraceContext DAG critical-path analyzer, N+1 ORM detector, multi-window SRE SLO burn-rate engine, and Nexus Aegis G4 exporter." />
+  <link rel="canonical" href="https://codesphere-u.github.io/stackpulse/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="StackPulse v1.2.0 — Cloud Observability &amp; SRE SLO Platform" />
+  <meta property="og:description" content="25,710 traces/sec DAG assembly, 8.48M spans/sec ingestion, 1h/6h/24h/72h error-budget burn rates, and automated Blameless SRE Postmortems." />
+  <meta property="og:url" content="https://codesphere-u.github.io/stackpulse/" />
+  <meta property="og:image" content="https://codesphere-u.github.io/stackpulse/og-image.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="StackPulse v1.2.0 — Cloud Observability &amp; SRE SLO Platform" />
+  <meta name="twitter:description" content="Reconstruct W3C TraceContext DAG waterfalls, catch N+1 queries and retry storms, and export Nexus Aegis G4 leaves." />
+  <meta name="twitter:image" content="https://codesphere-u.github.io/stackpulse/og-image.svg" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://codesphere-u.github.io/#org",
+        "name": "Codesphere Innovations (U) Limited",
+        "url": "https://github.com/codesphere-u"
+      },
+      {
+        "@type": "Person",
+        "@id": "https://codesphere-u.github.io/#author",
+        "name": "Akandwanaho Ivan Alvin",
+        "worksFor": { "@id": "https://codesphere-u.github.io/#org" }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://codesphere-u.github.io/stackpulse/#website",
+        "url": "https://codesphere-u.github.io/stackpulse/",
+        "name": "StackPulse",
+        "publisher": { "@id": "https://codesphere-u.github.io/#org" }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "StackPulse",
+        "softwareVersion": "1.2.0",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "macOS, Linux, Windows",
+        "license": "https://opensource.org/licenses/Apache-2.0",
+        "url": "https://codesphere-u.github.io/stackpulse/",
+        "codeRepository": "https://github.com/codesphere-u/stackpulse",
+        "author": { "@id": "https://codesphere-u.github.io/#author" },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How does StackPulse isolate exclusive span duration in async fan-out traces?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "TraceAnalyzer merges overlapping child span intervals before subtracting them from the parent span duration so parallel async calls are never double-counted."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What OTLP and SRE alerting protocols does StackPulse support?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "StackPulse accepts standard OTLP/HTTP JSON resourceSpans at POST /v1/traces, evaluates Google SRE 1h/6h/24h/72h burn rates, and dispatches SSRF-hardened Slack/JSON webhooks."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="page-col">
+    <header class="site-header">
+      <a class="brand-mark" href="index.html">
+        <svg class="brand-mascot" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <rect width="64" height="64" rx="16" fill="#134e4a"/>
+          <path d="M12 34h10l6-14 8 24 6-14 4 4h6" stroke="#ccfbf1" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="28" cy="20" r="4" fill="#ea580c"/>
+          <circle cx="36" cy="44" r="4" fill="#0d9488"/>
+        </svg>
+        <svg class="brand-wordmark-svg" width="196" height="36" viewBox="0 0 196 36" role="img" aria-label="StackPulse">
+          <text x="98" y="27" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="25" font-weight="700" fill="#0f1f1d">StackPulse</text>
+        </svg>
+        <span class="sr-only">StackPulse</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary Navigation">
+        <a href="index.html" class="active">Home</a>
+        <a href="studio.html">Studio</a>
+        <a href="proof.html">Benchmarks</a>
+        <a href="rules.html">Rules &amp; OTLP</a>
+        <a href="docs.html">Docs</a>
+        <a href="https://github.com/codesphere-u/stackpulse">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <section style="text-align:center;">
+        <p class="hero-kicker">v1.2.0 &middot; OpenTelemetry &amp; SRE Observability</p>
+        <h1 class="hero-title">Pinpoint critical-path bottlenecks and SLO burn in microseconds.</h1>
+        <p class="hero-lead">
+          StackPulse reconstructs flat W3C TraceContext spans into parent-child DAGs, detects N+1 ORM regressions &amp; retry storms, tracks 1h/6h/24h/72h error-budget burn, and synthesizes blameless postmortems.
+        </p>
+
+        <div class="hero-actions">
+          <div class="cta-wrap">
+            <button type="button" class="btn-primary" data-popover-toggle="installPopover">Install StackPulse</button>
+            <div id="installPopover" class="cta-popover" role="dialog" aria-label="Install commands">
+              <p class="cta-popover-title">Quick Install &amp; Simulate</p>
+              <div class="cmd-row">
+                <code>pip install -e ".[dev]"</code>
+                <button type="button" class="copy-mini" data-copy="pip install -e &quot;.[dev]&quot;">Copy</button>
+              </div>
+              <div class="cmd-row">
+                <code>stackpulse simulate --scenario all --count 24</code>
+                <button type="button" class="copy-mini" data-copy="stackpulse simulate --scenario all --count 24">Copy</button>
+              </div>
+              <div class="cmd-row">
+                <code>stackpulse benchmark --traces 500</code>
+                <button type="button" class="copy-mini" data-copy="stackpulse benchmark --traces 500">Copy</button>
+              </div>
+            </div>
+          </div>
+          <a class="btn-secondary" href="studio.html">Open Trace Studio</a>
+          <a class="btn-secondary" href="docs.html">Read Docs</a>
+        </div>
+      </section>
+
+      <section class="flow-section">
+        <p class="section-label">Observability Pipeline</p>
+        <h2 class="section-heading">From flat OTLP spans to blameless SRE postmortems</h2>
+        <div class="flow-grid">
+          <article class="flow-step">
+            <span class="step-num">1</span>
+            <h3>OTLP &amp; DAG Assembly</h3>
+            <p>Ingests W3C spans via <code>POST /v1/traces</code>, builds parent-child DAGs, and merges async intervals.</p>
+          </article>
+          <article class="flow-step">
+            <span class="step-num">2</span>
+            <h3>Anomaly &amp; Burn Rate</h3>
+            <p>Detects N+1 ORM queries (&ge;4 sequential DB spans), 503 retry storms, and 14.4x fast-burn SLO alerts.</p>
+          </article>
+          <article class="flow-step">
+            <span class="step-num">3</span>
+            <h3>Postmortem &amp; Aegis G4</h3>
+            <p>Dispatches SSRF-hardened webhooks, builds UTC postmortems, and signs RFC 6962 Aegis G4 leaves.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="flow-section">
+        <p class="section-label">Quick Chaos Preview</p>
+        <h2 class="section-heading">Inspect critical-path &amp; burn-rate failure modes</h2>
+        <div class="handy-card soft">
+          <label class="field-label" for="quickScenarioSelect">Choose failure scenario</label>
+          <select id="quickScenarioSelect" class="handy-select" style="margin-bottom:14px;">
+            <option value="normal">Normal Baseline Checkout Trace</option>
+            <option value="n_plus_one">ORM Lazy-Loading N+1 Query Regression</option>
+            <option value="retry_storm">Downstream Payment HTTP 503 Retry Storm</option>
+          </select>
+          <div id="quickScenarioOut"></div>
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+            <a class="btn-primary btn-sm" href="studio.html">Launch Full Studio</a>
+            <a class="btn-secondary btn-sm" href="rules.html">Browse API &amp; Rules</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="flow-section">
+        <p class="section-label">Measured Benchmark (500 Traces / 3,625 W3C Spans)</p>
+        <h2 class="section-heading">High-speed local ingestion &amp; DAG critical-path analysis</h2>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="stat-val">8.48M/s</div>
+            <div class="stat-lbl">Span Ingestion Rate</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val">25,710/s</div>
+            <div class="stat-lbl">Trace DAG Assembly</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val">38.9 &mu;s</div>
+            <div class="stat-lbl">Mean DAG Latency</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val">83/83</div>
+            <div class="stat-lbl">Hardened Suite Passed</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="flow-section">
+        <p class="section-label">Frequently Asked Questions</p>
+        <h2 class="section-heading">Telemetry &amp; SRE details</h2>
+        <details class="faq-item">
+          <summary>How is exclusive span time computed when children overlap asynchronously?</summary>
+          <p><code>TraceAnalyzer</code> sorts and merges overlapping child intervals <code>[start, end]</code> before subtracting their union length from the parent span duration.</p>
+        </details>
+        <details class="faq-item">
+          <summary>How are alert webhooks protected against SSRF?</summary>
+          <p><code>/api/v1/alerts/register-webhook</code> blocks loopback, private RFC1918, IPv6-mapped IPv4, link-local metadata (`169.254.169.254`), and `.internal` targets by default.</p>
+        </details>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>StackPulse v1.2.0 &middot; Apache-2.0 License &middot; Codesphere Innovations (U) Limited</span>
+      <div class="footer-links">
+        <a href="docs.html">Docs</a>
+        <a href="studio.html">Studio</a>
+        <a href="llms.txt">llms.txt</a>
+        <a href="https://github.com/codesphere-u/stackpulse/releases/tag/v1.2.0">Release v1.2.0</a>
+      </div>
+    </footer>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script defer data-domain="codesphere-u.github.io" src="https://plausible.io/js/script.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

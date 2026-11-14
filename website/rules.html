@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Routes, OTLP &amp; SRE Rules — StackPulse</title>
+  <meta name="description" content="Searchable reference of StackPulse OTLP endpoints, TraceAnalyzer anomaly detectors, Google SRE SLO burn windows, and Aegis G4 APIs." />
+  <link rel="canonical" href="https://codesphere-u.github.io/stackpulse/rules.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="API Routes, OTLP &amp; SRE Rules — StackPulse" />
+  <meta property="og:description" content="Complete reference of StackPulse FastAPI endpoints, trace anomaly detectors, and SRE burn-rate windows." />
+  <meta property="og:image" content="https://codesphere-u.github.io/stackpulse/og-image.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-col">
+    <header class="site-header">
+      <a class="brand-mark" href="index.html">
+        <svg class="brand-mascot" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <rect width="64" height="64" rx="16" fill="#134e4a"/>
+          <path d="M12 34h10l6-14 8 24 6-14 4 4h6" stroke="#ccfbf1" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="28" cy="20" r="4" fill="#ea580c"/>
+          <circle cx="36" cy="44" r="4" fill="#0d9488"/>
+        </svg>
+        <svg class="brand-wordmark-svg" width="196" height="36" viewBox="0 0 196 36" role="img" aria-label="StackPulse">
+          <text x="98" y="27" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="25" font-weight="700" fill="#0f1f1d">StackPulse</text>
+        </svg>
+        <span class="sr-only">StackPulse</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary Navigation">
+        <a href="index.html">Home</a>
+        <a href="studio.html">Studio</a>
+        <a href="proof.html">Benchmarks</a>
+        <a href="rules.html" class="active">Rules &amp; OTLP</a>
+        <a href="docs.html">Docs</a>
+        <a href="https://github.com/codesphere-u/stackpulse">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <p class="hero-kicker">Telemetry &amp; API Reference</p>
+      <h1 class="hero-title" style="font-size:2rem;">OTLP Endpoints, Anomaly Detectors &amp; SLO Windows</h1>
+      <p id="rulesCount" style="color:var(--muted);margin-bottom:14px;"></p>
+
+      <div class="rules-filter">
+        <input id="rulesSearch" class="handy-input" style="flex:1 1 240px;" type="search" placeholder="Filter endpoints, anomalies, burn windows..." />
+        <select id="rulesCategory" class="handy-select" style="flex:0 0 190px;">
+          <option value="all">All Specifications</option>
+          <option value="api">API Endpoints (5)</option>
+          <option value="detector">Trace &amp; SLO Rules (4)</option>
+        </select>
+      </div>
+
+      <article class="rule-card" data-rule-card data-cat="api">
+        <span class="rule-id">POST &middot; /v1/traces</span>
+        <h2 style="font-size:1.05rem;margin:8px 0 4px;">Standard OTLP/HTTP JSON Ingestion</h2>
+        <p style="margin:0;font-size:0.9rem;color:var(--muted);">Deserializes OpenTelemetry Collector <code>resourceSpans</code> and normalizes 128-bit/64-bit trace and span IDs.</p>
+      </article>
+      <article class="rule-card" data-rule-card data-cat="api">
+        <span class="rule-id">POST &middot; /api/v1/alerts/register-webhook</span>
+        <h2 style="font-size:1.05rem;margin:8px 0 4px;">SSRF-Hardened Alert Webhook Registration</h2>
+        <p style="margin:0;font-size:0.9rem;color:var(--muted);">Registers Slack or JSON alert endpoints while blocking private IPv4/IPv6, localhost, and cloud metadata IPs.</p>
+      </article>
+      <article class="rule-card" data-rule-card data-cat="api">
+        <span class="rule-id">GET &middot; /api/v1/aegis/leaf/{trace_id}</span>
+        <h2 style="font-size:1.05rem;margin:8px 0 4px;">Nexus Aegis G4 Trajectory Leaf</h2>
+        <p style="margin:0;font-size:0.9rem;color:var(--muted);">Generates RFC 6962 <code>0x00</code>-prefixed SHA-256 leaf hash certifying critical path and anomaly health.</p>
+      </article>
+      <article class="rule-card" data-rule-card data-cat="api">
+        <span class="rule-id">GET &middot; /api/v1/slo</span>
+        <h2 style="font-size:1.05rem;margin:8px 0 4px;">Multi-Window SLO Compliance Report</h2>
+        <p style="margin:0;font-size:0.9rem;color:var(--muted);">Returns 1h, 6h, 24h, and 72h availability/latency burn rates and projected hours to budget exhaustion.</p>
+      </article>
+      <article class="rule-card" data-rule-card data-cat="api">
+        <span class="rule-id">GET &middot; /api/v1/incidents/postmortem</span>
+        <h2 style="font-size:1.05rem;margin:8px 0 4px;">Blameless SRE Postmortem Synthesizer</h2>
+        <p style="margin:0;font-size:0.9rem;color:var(--muted);">Correlates trace bottlenecks, structured error logs, and SLO breaches into structured Markdown postmortems.</p>
+      </article>
+
+      <article class="rule-card" data-rule-card data-cat="detector">
+        <span class="rule-id">ANOMALY &middot; N_PLUS_ONE_ORM</span>
+        <h2 style="font-size:1.05rem;margin:8px 0 4px;">N+1 ORM Query Regression Detector</h2>
+        <p style="margin:0;font-size:0.9rem;color:var(--muted);">Triggers when &ge;4 identical sequential database operations execute under a single parent span.</p>
+      </article>
+      <article class="rule-card" data-rule-card data-cat="detector">
+        <span class="rule-id">ANOMALY &middot; RETRY_STORM</span>
+        <h2 style="font-size:1.05rem;margin:8px 0 4px;">Downstream HTTP 503 Retry Storm Detector</h2>
+        <p style="margin:0;font-size:0.9rem;color:var(--muted);">Detects repeated consecutive downstream 5xx retries amplifying tail latency.</p>
+      </article>
+      <article class="rule-card" data-rule-card data-cat="detector">
+        <span class="rule-id">SLO &middot; PAGE_CRITICAL (14.4x)</span>
+        <h2 style="font-size:1.05rem;margin:8px 0 4px;">Fast-Burn Pager Alert</h2>
+        <p style="margin:0;font-size:0.9rem;color:var(--muted);">Pages immediately when 1h burn rate meets or exceeds <code>14.4x</code> error budget consumption.</p>
+      </article>
+      <article class="rule-card" data-rule-card data-cat="detector">
+        <span class="rule-id">SLO &middot; TICKET_WARNING (3.0x / 6.0x)</span>
+        <h2 style="font-size:1.05rem;margin:8px 0 4px;">Slow-Burn Engineering Ticket</h2>
+        <p style="margin:0;font-size:0.9rem;color:var(--muted);">Emits warning tickets for sustained 6h/24h/72h error-budget erosion before outage.</p>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <span>StackPulse v1.2.0 &middot; Apache-2.0 License</span>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="studio.html">Studio</a>
+        <a href="docs.html">Docs</a>
+      </div>
+    </footer>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+# StackPulse
+
+> OpenTelemetry W3C TraceContext DAG critical-path analyzer, N+1 ORM & HTTP 503 retry-storm detector, multi-window SRE SLO burn-rate engine, and Nexus Aegis G4 exporter.
+
+- Website: https://codesphere-u.github.io/stackpulse/
+- Docs: https://codesphere-u.github.io/stackpulse/docs.html
+- Repository: https://github.com/codesphere-u/stackpulse
+- Full Context: https://codesphere-u.github.io/stackpulse/llms-full.txt

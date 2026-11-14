@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Benchmarks &amp; Proof — StackPulse</title>
+  <meta name="description" content="Reproducible 500-trace, 3,625-span StackPulse benchmark measuring 8.48M spans/sec ingestion, 25,710 traces/sec DAG assembly, and 38.9 us latency." />
+  <link rel="canonical" href="https://codesphere-u.github.io/stackpulse/proof.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Benchmarks &amp; Proof — StackPulse" />
+  <meta property="og:description" content="Observed StackPulse ingestion, DAG critical-path throughput, and automated test verification." />
+  <meta property="og:image" content="https://codesphere-u.github.io/stackpulse/og-image.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-col">
+    <header class="site-header">
+      <a class="brand-mark" href="index.html">
+        <svg class="brand-mascot" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <rect width="64" height="64" rx="16" fill="#134e4a"/>
+          <path d="M12 34h10l6-14 8 24 6-14 4 4h6" stroke="#ccfbf1" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="28" cy="20" r="4" fill="#ea580c"/>
+          <circle cx="36" cy="44" r="4" fill="#0d9488"/>
+        </svg>
+        <svg class="brand-wordmark-svg" width="196" height="36" viewBox="0 0 196 36" role="img" aria-label="StackPulse">
+          <text x="98" y="27" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="25" font-weight="700" fill="#0f1f1d">StackPulse</text>
+        </svg>
+        <span class="sr-only">StackPulse</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary Navigation">
+        <a href="index.html">Home</a>
+        <a href="studio.html">Studio</a>
+        <a href="proof.html" class="active">Benchmarks</a>
+        <a href="rules.html">Rules &amp; OTLP</a>
+        <a href="docs.html">Docs</a>
+        <a href="https://github.com/codesphere-u/stackpulse">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <p class="hero-kicker">Reproducible Evidence</p>
+      <h1 class="hero-title" style="font-size:2rem;">500-Trace OTLP &amp; DAG Benchmark</h1>
+      <p style="color:var(--muted);margin-bottom:20px;">Measured directly via <code>stackpulse benchmark --traces 500</code>.</p>
+
+      <div class="handy-card">
+        <table>
+          <thead><tr><th>Metric</th><th>Measured Result</th></tr></thead>
+          <tbody>
+            <tr><td>Total Traces Evaluated</td><td>500 traces</td></tr>
+            <tr><td>Total W3C Spans Ingested</td><td>3,625 spans</td></tr>
+            <tr><td>Span Ingestion Throughput</td><td>8,486,143 spans/sec (0.43 ms total)</td></tr>
+            <tr><td>Trace DAG Assembly Throughput</td><td>25,710 traces/sec (19.45 ms total)</td></tr>
+            <tr><td>Mean Critical-Path DAG Latency</td><td>38.9 &mu;s / trace</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="handy-card soft">
+        <h2 style="font-family:Georgia,serif;margin:0 0 10px;font-size:1.2rem;">Run Locally</h2>
+        <pre><code>stackpulse benchmark --traces 500
+stackpulse simulate --scenario all --count 24
+stackpulse export-aegis</code></pre>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <span>StackPulse v1.2.0 &middot; Apache-2.0 License</span>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="studio.html">Studio</a>
+        <a href="docs.html">Docs</a>
+      </div>
+    </footer>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

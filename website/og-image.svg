@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#fffdf2"/>
+  <rect x="44" y="44" width="1112" height="542" rx="32" fill="#ffffff" stroke="#d4e5e2" stroke-width="3"/>
+  <rect x="88" y="88" width="96" height="96" rx="24" fill="#134e4a"/>
+  <path d="M104 136h14l9-20 12 36 9-20 6 4h10" stroke="#ccfbf1" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="127" cy="116" r="5" fill="#ea580c"/>
+  <text x="88" y="256" font-family="Georgia, 'Times New Roman', serif" font-size="64" font-weight="700" fill="#0f1f1d">StackPulse v1.2.0</text>
+  <text x="88" y="316" font-family="Inter, -apple-system, sans-serif" font-size="30" fill="#4b615d">OpenTelemetry DAG Critical-Path Analyzer &amp; Multi-Window SLO Platform</text>
+  <rect x="88" y="376" width="248" height="54" rx="27" fill="#0d9488"/>
+  <text x="212" y="411" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#ffffff">25.7k Traces / Sec</text>
+  <rect x="356" y="376" width="248" height="54" rx="27" fill="#ffedd5" stroke="#ea580c" stroke-width="2"/>
+  <text x="480" y="411" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#7c2d12">1h/6h/24h/72h Burn Rate</text>
+  <rect x="624" y="376" width="248" height="54" rx="27" fill="#ccfbf1" stroke="#0d9488" stroke-width="2"/>
+  <text x="748" y="411" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#134e4a">Nexus Aegis G4 Ready</text>
+  <text x="88" y="520" font-family="JetBrains Mono, monospace" font-size="22" fill="#4b615d">codesphere-u.github.io/stackpulse/</text>
+</svg>

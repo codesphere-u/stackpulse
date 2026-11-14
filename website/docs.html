@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentation — StackPulse</title>
+  <meta name="description" content="Complete StackPulse documentation covering OTLP ingestion, W3C DAG critical-path analysis, multi-window SLO burn rates, and Aegis G4 export." />
+  <link rel="canonical" href="https://codesphere-u.github.io/stackpulse/docs.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Documentation — StackPulse" />
+  <meta property="og:description" content="Developer reference for StackPulse CLI, FastAPI SRE console, OTLP adapter, and Nexus Aegis G4." />
+  <meta property="og:image" content="https://codesphere-u.github.io/stackpulse/og-image.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <a class="docs-brand" href="index.html">
+        <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <rect width="64" height="64" rx="16" fill="#134e4a"/>
+          <path d="M12 34h10l6-14 8 24 6-14 4 4h6" stroke="#ccfbf1" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="28" cy="20" r="4" fill="#ea580c"/>
+        </svg>
+        <span>StackPulse</span>
+      </a>
+      <nav class="docs-nav" aria-label="Documentation Navigation">
+        <a href="index.html">Home</a>
+        <a href="studio.html">Studio</a>
+        <a href="proof.html">Benchmarks</a>
+        <a href="rules.html">Rules &amp; OTLP</a>
+        <a href="docs.html" class="active">Docs</a>
+        <a href="https://github.com/codesphere-u/stackpulse">GitHub</a>
+      </nav>
+      <div class="docs-rail-foot">v1.2.0 &middot; Apache-2.0</div>
+    </aside>
+
+    <main class="docs-main">
+      <h1>StackPulse Documentation</h1>
+      <p style="color:var(--muted);">Cloud observability, W3C TraceContext DAG critical-path analysis, and SRE SLO reliability platform.</p>
+
+      <nav class="doc-subrail" aria-label="Page Sections">
+        <a href="#install">Install</a>
+        <a href="#otlp">OTLP Ingestion</a>
+        <a href="#dag">DAG Analyzer</a>
+        <a href="#slo">SRE Burn Rates</a>
+        <a href="#aegis">Aegis G4</a>
+      </nav>
+
+      <h2 id="install">1. Installation &amp; Simulation</h2>
+      <pre><code>git clone https://github.com/codesphere-u/stackpulse.git
+cd stackpulse
+pip install -e ".[dev]"
+stackpulse simulate --scenario all --count 24
+stackpulse serve --host 127.0.0.1 --port 8098</code></pre>
+
+      <h2 id="otlp">2. OpenTelemetry OTLP/HTTP JSON Adapter</h2>
+      <p>Send standard OpenTelemetry Collector <code>resourceSpans</code> directly to <code>POST /v1/traces</code> or <code>POST /api/v1/otlp/traces</code>, or batch-load JSON files with <code>stackpulse ingest-otlp -f trace.json</code>.</p>
+
+      <h2 id="dag">3. W3C Critical-Path DAG &amp; Exclusive Time</h2>
+      <p><code>TraceAnalyzer</code> reconstructs trees from out-of-order spans, merges overlapping async child intervals before subtraction, and isolates N+1 ORM queries and 503 retry storms.</p>
+
+      <h2 id="slo">4. Multi-Window SRE SLO Burn Rates</h2>
+      <p><code>SLOEngine</code> computes <code>1h</code>, <code>6h</code>, <code>24h</code>, and <code>72h</code> burn rates against target SLIs and projects hours until error-budget exhaustion.</p>
+
+      <h2 id="aegis">5. Nexus Aegis G4 Trajectory Attestation</h2>
+      <pre><code>stackpulse export-aegis
+curl -s http://127.0.0.1:8098/api/v1/aegis/leaf/&lt;trace_id&gt;</code></pre>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

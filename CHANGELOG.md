@@ -2,6 +2,17 @@
 
 All notable changes to **StackPulse** are documented in this file.
 
+## [1.2.0] - 2026-11-14
+
+### Added
+- **Editorial Website & Interactive Trace/SLO Studio (`website/`)**:
+  - Multi-page Warm Ivory (`#fffdf2`) editorial website with Telemetry Teal (`#0d9488`) and Burn-Rate Amber (`#ea580c`) accents across `index.html`, `studio.html`, `proof.html`, `rules.html`, and `docs.html`.
+  - Interactive `studio.html` simulator for W3C TraceContext DAG critical-path calculation, N+1 ORM / retry-storm detection, Google SRE multi-window burn-rate alerting (`1h/6h/24h/72h`), and Nexus Aegis `G4_TRAJECTORY_HEALTH` leaf export.
+  - Full SEO/GEO suite (`llms.txt`, `llms-full.txt`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, Schema.org `@graph` JSON-LD, and `website/marketing/` playbooks).
+- **Documentation, Pages & Verification**:
+  - Added `CITATION.cff`, `docs/GETTING_STARTED.md`, `docs/OTLP_SLO_AND_AEGIS.md`, `.github/workflows/pages.yml`, and `tests/test_website_and_docs.py`.
+  - Bumped package version to `1.2.0`.
+
 ## [1.1.0] - 2026-11-09
 
 ### Added

@@ -1,0 +1,11 @@
+{
+  "name": "StackPulse — Cloud Observability & Distributed Trace Platform",
+  "short_name": "StackPulse",
+  "description": "W3C TraceContext DAG critical-path analyzer, N+1 ORM & retry storm detector, multi-window SRE SLO burn-rate engine, and Nexus Aegis G4 exporter.",
+  "start_url": "/stackpulse/",
+  "scope": "/stackpulse/",
+  "display": "standalone",
+  "background_color": "#fffdf2",
+  "theme_color": "#0d9488",
+  "icons": [{ "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

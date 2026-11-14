@@ -1,9 +1,13 @@
 # StackPulse
 
 [![CI](https://github.com/codesphere-u/stackpulse/actions/workflows/ci.yml/badge.svg)](https://github.com/codesphere-u/stackpulse/actions/workflows/ci.yml)
+[![Release v1.2.0](https://img.shields.io/badge/release-v1.2.0-0d9488.svg)](https://github.com/codesphere-u/stackpulse/releases/tag/v1.2.0)
+[![Website](https://img.shields.io/badge/website-codesphere--u.github.io%2Fstackpulse-0d9488.svg)](https://codesphere-u.github.io/stackpulse/)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB.svg)](pyproject.toml)
 [![OpenTelemetry Compatible](https://img.shields.io/badge/OpenTelemetry-W3C_TraceContext-8A2BE2.svg)](docs/architecture.md)
+
+> **Live Website & Trace/SLO Studio:** [codesphere-u.github.io/stackpulse](https://codesphere-u.github.io/stackpulse/) | **Docs:** [Getting Started](docs/GETTING_STARTED.md) &middot; [OTLP, SLO & Aegis G4](docs/OTLP_SLO_AND_AEGIS.md)
 
 **StackPulse** is an OpenTelemetry-compatible **Cloud Observability, Distributed Trace Critical-Path Analyzer & Multi-Window SLO Reliability Platform**. It reconstructs flat W3C TraceContext spans into full parent-child DAG execution waterfalls, isolates exclusive critical-path latency bottlenecks, automatically detects **N+1 ORM query regressions** and **cascading retry storms**, computes **Google SRE Workbook multi-window error-budget burn rates (1h / 6h / 24h / 72h)**, and correlates anomalous traces, logs, and SLO breaches into an automated **Blameless SRE Postmortem**.
 
